@@ -1,0 +1,10 @@
+openai==2.41.1
+openpyxl==3.1.5
+pandas==2.3.2
+python-dotenv==1.2.2
+jupyterlab==4.5.8
+ipykernel==7.3.0
+nbformat==5.10.4
+SPARQLWrapper==2.0.0
+polars==1.41.2
+pymilvus==3.0.0
