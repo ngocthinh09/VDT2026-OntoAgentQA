@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OntologyQA Elasticsearch Search</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --line: #d7dce3;
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --ok: #027a48;
+      --ok-bg: #ecfdf3;
+      --code: #111827;
+      --code-bg: #f1f5f9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .wrap {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 0;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .endpoint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 320px;
+    }
+
+    input, select, button, textarea {
+      font: inherit;
+    }
+
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 11px;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    button {
+      border: 0;
+      border-radius: 6px;
+      height: 42px;
+      padding: 0 14px;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 650;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    button:hover { background: var(--accent-dark); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    main { padding: 20px 0 32px; }
+
+    .search-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 190px minmax(260px, 1fr) 110px 150px 120px;
+      gap: 12px;
+      align-items: end;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 650;
+      color: #344054;
+    }
+
+    .toggle-field {
+      display: flex;
+      align-items: center;
+      height: 42px;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 11px;
+      background: #fff;
+      color: #344054;
+      font-size: 14px;
+      font-weight: 650;
+      margin: 0;
+    }
+
+    .toggle-field input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .status.ok { display: block; color: var(--ok); background: var(--ok-bg); border: 1px solid #abefc6; }
+    .status.err { display: block; color: var(--danger); background: var(--danger-bg); border: 1px solid #fecdca; }
+
+    .content {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 16px;
+      margin-top: 16px;
+      align-items: start;
+    }
+
+    .results, .request-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 120px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .count {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .result-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .result {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .result:last-child { border-bottom: 0; }
+
+    .result-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .label-text {
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      color: #475467;
+      font-size: 12px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .score { color: var(--muted); font-size: 12px; }
+
+    .uri {
+      display: block;
+      margin: 8px 0;
+      color: var(--accent-dark);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .meta {
+      display: grid;
+      gap: 6px;
+      margin-top: 8px;
+      color: #475467;
+      font-size: 13px;
+    }
+
+    .meta-row strong {
+      color: #344054;
+      font-weight: 700;
+    }
+
+    pre {
+      margin: 0;
+      padding: 14px;
+      overflow: auto;
+      max-height: 620px;
+      background: var(--code-bg);
+      color: var(--code);
+      font-size: 12px;
+      line-height: 1.45;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .empty {
+      padding: 28px 14px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .topbar { align-items: stretch; flex-direction: column; }
+      .endpoint { min-width: 0; }
+      .grid { grid-template-columns: 1fr; }
+      .content { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar">
+      <h1>OntologyQA Elasticsearch Search</h1>
+      <div class="endpoint">
+        <label for="endpoint" style="margin:0; white-space:nowrap;">Endpoint</label>
+        <input id="endpoint" value="http://localhost:9200" />
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="search-panel">
+      <div class="grid">
+        <div>
+          <label for="mode">Search type</label>
+          <select id="mode">
+            <option value="entity">Entity</option>
+            <option value="property">Property</option>
+            <option value="class">Class</option>
+          </select>
+        </div>
+        <div>
+          <label for="query">Query</label>
+          <input id="query" placeholder="Albert Einstein, birth year, actor..." autocomplete="off" />
+        </div>
+        <div>
+          <label for="size">Top K</label>
+          <input id="size" type="number" min="1" max="50" value="10" />
+        </div>
+        <div>
+          <label for="fuzzy">Matching</label>
+          <label class="toggle-field">
+            <input id="fuzzy" type="checkbox" checked />
+            Fuzzy
+          </label>
+        </div>
+        <button id="searchBtn">Search</button>
+      </div>
+      <div class="hint">
+        Entity uses <code>entity_index</code>. Property/Class use <code>schema_index</code> with the <code>kind</code> filter.
+      </div>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="content">
+      <div class="results">
+        <div class="section-head">
+          <h2>Results</h2>
+          <span id="count" class="count">No query yet</span>
+        </div>
+        <div id="results" class="result-list">
+          <div class="empty">Enter a query, then click Search.</div>
+        </div>
+      </div>
+
+      <aside class="request-box">
+        <div class="section-head">
+          <h2>Elasticsearch Request</h2>
+          <span class="count">debug</span>
+        </div>
+        <pre id="requestPreview"></pre>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const endpointEl = document.getElementById('endpoint');
+    const modeEl = document.getElementById('mode');
+    const queryEl = document.getElementById('query');
+    const sizeEl = document.getElementById('size');
+    const fuzzyEl = document.getElementById('fuzzy');
+    const searchBtn = document.getElementById('searchBtn');
+    const statusEl = document.getElementById('status');
+    const resultsEl = document.getElementById('results');
+    const countEl = document.getElementById('count');
+    const requestPreviewEl = document.getElementById('requestPreview');
+
+    function buildRequest() {
+      const mode = modeEl.value;
+      const query = queryEl.value.trim();
+      const size = Math.max(1, Math.min(50, Number(sizeEl.value) || 10));
+      const fuzzy = fuzzyEl.checked;
+
+      if (mode === 'entity') {
+        const entityMatch = {
+          query,
+          fields: ['label^4', 'type_labels']
+        };
+        if (fuzzy) entityMatch.fuzziness = 'AUTO';
+
+        return {
+          index: 'entity_index',
+          body: {
+            size,
+            query: {
+              multi_match: entityMatch
+            }
+          }
+        };
+      }
+
+      const schemaFields = mode === 'class'
+        ? ['labels^4', 'comments']
+        : ['labels^4', 'comments', 'domain_label', 'range_label'];
+
+      const schemaMatch = {
+        query,
+        fields: schemaFields
+      };
+      if (fuzzy) schemaMatch.fuzziness = 'AUTO';
+
+      return {
+        index: 'schema_index',
+        body: {
+          size,
+          query: {
+            bool: {
+              filter: [{ term: { kind: mode } }],
+              must: {
+                multi_match: schemaMatch
+              }
+            }
+          }
+        }
+      };
+    }
+
+    function updatePreview() {
+      const req = buildRequest();
+      requestPreviewEl.textContent = `POST /${req.index}/_search\n` + JSON.stringify(req.body, null, 2);
+    }
+
+    function setStatus(type, message) {
+      statusEl.className = 'status ' + (type || '');
+      statusEl.textContent = message || '';
+      if (!type) statusEl.style.display = 'none';
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function firstValue(value) {
+      if (Array.isArray(value)) return value[0] || '';
+      return value || '';
+    }
+
+    function renderEntity(hit) {
+      const s = hit._source || {};
+      return `
+        <article class="result">
+          <div class="result-title">
+            <span class="label-text">${escapeHtml(s.label || s.raw_local_name || s.uri)}</span>
+            <span class="score">score ${hit._score?.toFixed ? hit._score.toFixed(3) : hit._score}</span>
+          </div>
+          <a class="uri" href="${escapeHtml(s.uri)}" target="_blank" rel="noreferrer">${escapeHtml(s.uri)}</a>
+          <div class="meta">
+            <div class="meta-row"><strong>Types:</strong> ${escapeHtml((s.type_labels || []).join(', ') || '-')}</div>
+            <div class="meta-row"><strong>Raw local name:</strong> ${escapeHtml(s.raw_local_name || '-')}</div>
+          </div>
+        </article>`;
+    }
+
+    function renderSchema(hit) {
+      const s = hit._source || {};
+      const label = firstValue(s.labels) || s.local_name || s.uri;
+      const comment = firstValue(s.comments);
+      return `
+        <article class="result">
+          <div class="result-title">
+            <span class="label-text">${escapeHtml(label)}</span>
+            <span class="badge">${escapeHtml(s.kind || '-')}</span>
+          </div>
+          <div class="score">score ${hit._score?.toFixed ? hit._score.toFixed(3) : hit._score}</div>
+          <a class="uri" href="${escapeHtml(s.uri)}" target="_blank" rel="noreferrer">${escapeHtml(s.uri)}</a>
+          <div class="meta">
+            <div class="meta-row"><strong>Labels:</strong> ${escapeHtml((s.labels || []).join(', ') || '-')}</div>
+            <div class="meta-row"><strong>Comment:</strong> ${escapeHtml(comment || '-')}</div>
+            <div class="meta-row"><strong>Domain:</strong> ${escapeHtml(s.domain_label || s.domain || '-')}</div>
+            <div class="meta-row"><strong>Range:</strong> ${escapeHtml(s.range_label || s.range || '-')}</div>
+          </div>
+        </article>`;
+    }
+
+    async function search() {
+      const query = queryEl.value.trim();
+      if (!query) {
+        setStatus('err', 'Please enter a query.');
+        return;
+      }
+
+      const req = buildRequest();
+      const endpoint = endpointEl.value.replace(/\/+$/, '');
+      const url = `${endpoint}/${req.index}/_search`;
+      updatePreview();
+      setStatus('', '');
+      searchBtn.disabled = true;
+      searchBtn.textContent = 'Searching...';
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(req.body)
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`HTTP ${res.status}: ${text}`);
+        }
+
+        const data = await res.json();
+        const hits = data.hits?.hits || [];
+        countEl.textContent = `${hits.length} shown / ${data.hits?.total?.value ?? 0} total`;
+        resultsEl.innerHTML = hits.length
+          ? hits.map(hit => modeEl.value === 'entity' ? renderEntity(hit) : renderSchema(hit)).join('')
+          : '<div class="empty">No results found.</div>';
+        setStatus('ok', `OK: searched ${req.index}`);
+      } catch (err) {
+        resultsEl.innerHTML = '<div class="empty">Search failed.</div>';
+        countEl.textContent = 'Error';
+        setStatus('err', String(err.message || err) + '\n\nIf the error is Failed to fetch/CORS, enable CORS in the Elasticsearch Docker config.');
+      } finally {
+        searchBtn.disabled = false;
+        searchBtn.textContent = 'Search';
+      }
+    }
+
+    searchBtn.addEventListener('click', search);
+    queryEl.addEventListener('keydown', event => {
+      if (event.key === 'Enter') search();
+    });
+    modeEl.addEventListener('change', updatePreview);
+    sizeEl.addEventListener('input', updatePreview);
+    queryEl.addEventListener('input', updatePreview);
+    endpointEl.addEventListener('input', updatePreview);
+    fuzzyEl.addEventListener('change', updatePreview);
+    updatePreview();
+  </script>
+</body>
+</html>
