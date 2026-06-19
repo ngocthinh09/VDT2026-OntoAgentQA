@@ -178,7 +178,7 @@ def _search_schema(
 @tool
 def search_entity_by_label(
     query: str,
-    limit: int = 5,
+    limit: int = 10,
     fuzziness: str | None = "AUTO",
 ) -> list[dict[str, Any]]:
     """Search DBpedia named entities/instances by lexical label.
@@ -214,7 +214,7 @@ def search_entity_by_label(
 @tool
 def search_property_by_label(
     query: str,
-    limit: int = 5,
+    limit: int = 10,
     fuzziness: str | None = "AUTO",
 ) -> list[dict[str, Any]]:
     """Search DBpedia ontology properties by label or description.

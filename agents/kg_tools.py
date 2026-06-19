@@ -37,6 +37,10 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 """
 
+SPARQL_AGGREGATE_PATTERN = re.compile(
+    r"(?i)\b(COUNT|SUM|MIN|MAX|AVG|SAMPLE|GROUP_CONCAT)\s*\("
+)
+
 
 def _execute_sparql(query: str) -> list[dict[str, Any]] | bool:
     """Execute a SELECT/ASK SPARQL query against GraphDB."""
@@ -94,6 +98,150 @@ def _sparql_operation(query: str) -> str:
 
     match = re.match(r"(?is)^([A-Za-z]+)\b", clean_query)
     return match.group(1).upper() if match else ""
+
+
+def _mask_sparql_non_code(query: str) -> str:
+    """Mask comments, string literals, and IRI references while preserving offsets."""
+    chars = list(query)
+    length = len(query)
+    index = 0
+
+    def mask(start: int, end: int) -> None:
+        for position in range(start, min(end, length)):
+            if chars[position] not in {"\n", "\r"}:
+                chars[position] = " "
+
+    while index < length:
+        if query[index] == "#":
+            end = query.find("\n", index)
+            end = length if end == -1 else end
+            mask(index, end)
+            index = end
+            continue
+
+        if query.startswith(('"""', "'''"), index):
+            quote = query[index : index + 3]
+            end = index + 3
+            while end < length:
+                if query.startswith(quote, end):
+                    end += 3
+                    break
+                if query[end] == "\\":
+                    end += 2
+                else:
+                    end += 1
+            mask(index, end)
+            index = end
+            continue
+
+        if query[index] in {'"', "'"}:
+            quote = query[index]
+            end = index + 1
+            while end < length:
+                if query[end] == "\\":
+                    end += 2
+                    continue
+                end += 1
+                if query[end - 1] == quote:
+                    break
+            mask(index, end)
+            index = end
+            continue
+
+        if query[index] == "<" and re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", query[index + 1 :]):
+            end = query.find(">", index + 1)
+            end = length if end == -1 else end + 1
+            mask(index, end)
+            index = end
+            continue
+
+        index += 1
+
+    return "".join(chars)
+
+
+def _select_projection_ranges(masked_query: str) -> list[tuple[int, int]]:
+    ranges: list[tuple[int, int]] = []
+    for match in re.finditer(r"(?i)\bSELECT\b", masked_query):
+        start = match.end()
+        depth = 0
+        index = start
+        while index < len(masked_query):
+            char = masked_query[index]
+            if char == "(":
+                depth += 1
+            elif char == ")":
+                depth = max(0, depth - 1)
+            elif depth == 0:
+                if char == "{":
+                    ranges.append((start, index))
+                    break
+                where_match = re.match(r"(?i)WHERE\b", masked_query[index:])
+                if where_match:
+                    ranges.append((start, index))
+                    break
+            index += 1
+    return ranges
+
+
+def _projection_group_has_alias(projection: str, group_start: int, group_end: int) -> bool:
+    depth = 0
+    index = group_start
+    while index < group_end:
+        char = projection[index]
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+        elif depth == 1:
+            alias_match = re.match(r"(?i)\bAS\s+\?[A-Za-z_][A-Za-z0-9_]*", projection[index:])
+            if alias_match:
+                return True
+        index += 1
+    return False
+
+
+def _aggregate_alias_error(query: str) -> str | None:
+    """Return an actionable error when a SELECT aggregate lacks an AS alias."""
+    masked_query = _mask_sparql_non_code(query)
+    invalid_aggregates: list[str] = []
+
+    for start, end in _select_projection_ranges(masked_query):
+        projection = masked_query[start:end]
+        group_stack: list[int] = []
+        top_level_groups: list[tuple[int, int]] = []
+        for index, char in enumerate(projection):
+            if char == "(":
+                group_stack.append(index)
+            elif char == ")" and group_stack:
+                group_start = group_stack.pop()
+                if not group_stack:
+                    top_level_groups.append((group_start, index + 1))
+
+        for aggregate_match in SPARQL_AGGREGATE_PATTERN.finditer(projection):
+            aggregate_position = aggregate_match.start()
+            enclosing_group = next(
+                (
+                    (group_start, group_end)
+                    for group_start, group_end in top_level_groups
+                    if group_start < aggregate_position < group_end
+                ),
+                None,
+            )
+            if enclosing_group is None or not _projection_group_has_alias(
+                projection, *enclosing_group
+            ):
+                invalid_aggregates.append(aggregate_match.group(1).upper())
+
+    if not invalid_aggregates:
+        return None
+
+    aggregate_names = ", ".join(dict.fromkeys(invalid_aggregates))
+    return (
+        f"Aggregate expression(s) {aggregate_names} in SELECT must be wrapped "
+        "and aliased with AS. Example: SELECT (COUNT(?item) AS ?count) "
+        "WHERE { ... }"
+    )
 
 
 def _clamp_limit(limit: int, default: int, upper: int) -> int:
@@ -357,6 +505,13 @@ def execute_sparql(query: str) -> list[dict[str, Any]] | bool | dict[str, Any]:
         return _sparql_error_result(
             "unsupported_operation",
             "execute_sparql only supports read-only SELECT or ASK queries.",
+        )
+
+    aggregate_alias_error = _aggregate_alias_error(query_with_prefixes)
+    if aggregate_alias_error:
+        return _sparql_error_result(
+            "aggregate_alias_required",
+            aggregate_alias_error,
         )
 
     try:

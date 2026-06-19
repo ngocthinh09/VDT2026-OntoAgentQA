@@ -9,6 +9,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from agents.kg_tools import (
+    _aggregate_alias_error,
     _clamp_limit,
     execute_sparql,
     format_kg_entry,
@@ -47,6 +48,35 @@ def _assert_examples(name: str, examples: list[dict[str, Any]]) -> None:
 
 
 def main() -> int:
+    assert _aggregate_alias_error(
+        "SELECT COUNT(?university) WHERE { ?university a dbo:University . }"
+    )
+    assert _aggregate_alias_error(
+        "SELECT ?type SUM(?value) WHERE { ?item dbo:type ?type; dbo:value ?value . }"
+    )
+    assert _aggregate_alias_error(
+        "SELECT ?type WHERE { ?item dbo:type ?type . } HAVING (COUNT(*) > 1)"
+    ) is None
+    assert _aggregate_alias_error(
+        "SELECT (COUNT(DISTINCT ?university) AS ?count) WHERE { "
+        "?university a dbo:University . }"
+    ) is None
+    assert _aggregate_alias_error(
+        "SELECT (COALESCE(MAX(?value), 0) AS ?maximum) WHERE { ?item dbo:value ?value . }"
+    ) is None
+    assert _aggregate_alias_error(
+        "SELECT ?type (COUNT(*) AS ?count) WHERE { ?item dbo:type ?type . } "
+        "GROUP BY ?type ORDER BY DESC(COUNT(*))"
+    ) is None
+    assert _aggregate_alias_error(
+        "SELECT ?outer WHERE { { SELECT COUNT(?inner) WHERE { ?inner ?p ?o . } } }"
+    )
+    aggregate_error = _invoke(
+        execute_sparql,
+        query="SELECT COUNT(?university) WHERE { ?university a dbo:University . }",
+    )
+    assert aggregate_error["ok"] is False
+    assert aggregate_error["error_type"] == "aggregate_alias_required"
     assert _invoke(execute_sparql, query="") == []
     assert _invoke(
         execute_sparql,

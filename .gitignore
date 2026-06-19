@@ -4,3 +4,5 @@ results/
 .vscode/
 __pycache__/
 *.pyc
+benchmark-logs/*
+!benchmark-logs/.gitkeep
