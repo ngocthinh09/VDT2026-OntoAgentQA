@@ -163,6 +163,16 @@ def init_indices() -> None:
         "number_of_replicas": 0,
         "refresh_interval": "-1",
         "analysis": {
+            "filter": {
+                "english_possessive_stemmer": {
+                    "type": "stemmer",
+                    "language": "possessive_english",
+                },
+                "english_stemmer": {
+                    "type": "stemmer",
+                    "language": "english",
+                },
+            },
             "normalizer": {
                 "lowercase_normalizer": {
                     "type": "custom",
@@ -173,6 +183,15 @@ def init_indices() -> None:
                 "folding_text": {
                     "tokenizer": "standard",
                     "filter": ["lowercase", "asciifolding"],
+                },
+                "english_stemmed_text": {
+                    "tokenizer": "standard",
+                    "filter": [
+                        "english_possessive_stemmer",
+                        "lowercase",
+                        "asciifolding",
+                        "english_stemmer",
+                    ],
                 }
             },
         },
@@ -210,20 +229,55 @@ def init_indices() -> None:
                 "kind": {"type": "keyword"},
                 "labels": {
                     "type": "text",
-                    "analyzer": "folding_text",
+                    "analyzer": "english_stemmed_text",
+                    "search_analyzer": "english_stemmed_text",
                     "fields": {
+                        "folded": {
+                            "type": "text",
+                            "analyzer": "folding_text",
+                        },
                         "keyword": {
                             "type": "keyword",
                             "normalizer": "lowercase_normalizer",
                         }
                     },
                 },
-                "comments": {"type": "text", "analyzer": "folding_text"},
+                "comments": {
+                    "type": "text",
+                    "analyzer": "english_stemmed_text",
+                    "search_analyzer": "english_stemmed_text",
+                    "fields": {
+                        "folded": {
+                            "type": "text",
+                            "analyzer": "folding_text",
+                        },
+                    },
+                },
                 "local_name": {"type": "keyword"},
                 "domain": {"type": "keyword"},
                 "range": {"type": "keyword"},
-                "domain_label": {"type": "text", "analyzer": "folding_text"},
-                "range_label": {"type": "text", "analyzer": "folding_text"},
+                "domain_label": {
+                    "type": "text",
+                    "analyzer": "english_stemmed_text",
+                    "search_analyzer": "english_stemmed_text",
+                    "fields": {
+                        "folded": {
+                            "type": "text",
+                            "analyzer": "folding_text",
+                        },
+                    },
+                },
+                "range_label": {
+                    "type": "text",
+                    "analyzer": "english_stemmed_text",
+                    "search_analyzer": "english_stemmed_text",
+                    "fields": {
+                        "folded": {
+                            "type": "text",
+                            "analyzer": "folding_text",
+                        },
+                    },
+                },
             }
         },
     )
