@@ -1,0 +1,1440 @@
+[
+  {
+    "question": "Thành phố Hồ Chí Minh thuộc quốc gia nào?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Trung Quốc"
+      },
+      {
+        "id": 2,
+        "text": "Hà Nội"
+      },
+      {
+        "id": 3,
+        "text": "Việt Nam"
+      },
+      {
+        "id": 4,
+        "text": "Hoa Kỳ"
+      },
+      {
+        "id": 5,
+        "text": "Thái Lan"
+      }
+    ]
+  },
+  {
+    "question": "Ai là người thành lập Thành phố Hồ Chí Minh",
+    "options": [
+      {
+        "id": 1,
+        "text": "Lê Văn Duyệt"
+      },
+      {
+        "id": 2,
+        "text": "Đinh La Thăng"
+      },
+      {
+        "id": 3,
+        "text": "Hoàng Kế Viêm"
+      },
+      {
+        "id": 4,
+        "text": "Nguyễn Hữu Cảnh"
+      },
+      {
+        "id": 5,
+        "text": "Hồ Chí Minh"
+      }
+    ]
+  },
+  {
+    "question": "Nguyễn Hữu Cảnh mất tại tỉnh nào",
+    "options": [
+      {
+        "id": 1,
+        "text": "Thành phố Hồ Chí Minh"
+      },
+      {
+        "id": 2,
+        "text": "Quảng Ngãi"
+      },
+      {
+        "id": 3,
+        "text": "Hà Nội"
+      },
+      {
+        "id": 4,
+        "text": "Tây Ninh"
+      },
+      {
+        "id": 5,
+        "text": "Quảng Bình"
+      }
+    ]
+  },
+  {
+    "question": "Ai là vợ của Barack Obama?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Ông chưa có vợ"
+      },
+      {
+        "id": 2,
+        "text": "Eva Obama"
+      },
+      {
+        "id": 3,
+        "text": "Sasha Oboma"
+      },
+      {
+        "id": 4,
+        "text": "Michelle Obama"
+      },
+      {
+        "id": 5,
+        "text": "Malia Obama"
+      }
+    ]
+  },
+  {
+    "question": "Tàu INS Vikrant (2013) được xây dựng ở đâu",
+    "options": [
+      {
+        "id": 1,
+        "text": "Admiralty Shipyards"
+      },
+      {
+        "id": 2,
+        "text": "Black Sea Shipyard"
+      },
+      {
+        "id": 3,
+        "text": "Cochin Shipyard Limited"
+      },
+      {
+        "id": 4,
+        "text": "BAE Systems Submarine Solutions"
+      },
+      {
+        "id": 5,
+        "text": "Halifax, Nova Scotia"
+      }
+    ]
+  },
+  {
+    "question": "Máy bay Mil Mi-8 được sản xuất bởi ai",
+    "options": [
+      {
+        "id": 1,
+        "text": "Kazan_Helicopter_Plant, Ulan-Ude_Aviation_Plant"
+      },
+      {
+        "id": 2,
+        "text": "Kazan_Helicopter_Plant,  Cessna"
+      },
+      {
+        "id": 3,
+        "text": "Lockheed_Corporation, Kazan_Helicopter_Plant,"
+      },
+      {
+        "id": 4,
+        "text": "Ulan-Ude_Aviation_Plant, Cessna"
+      },
+      {
+        "id": 5,
+        "text": "Ulan-Ude_Aviation_Plant, Lockheed_Corporation"
+      }
+    ]
+  },
+  {
+    "question": "Tiền thân của dòng máy bay Antonov An-32 là dòng nào?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Antonov An-31"
+      },
+      {
+        "id": 2,
+        "text": "Antonov An-26"
+      },
+      {
+        "id": 3,
+        "text": "Antonov An-24"
+      },
+      {
+        "id": 4,
+        "text": "Antonov An-22"
+      },
+      {
+        "id": 5,
+        "text": "Antonov An-16"
+      }
+    ]
+  },
+  {
+    "question": "Người ta dùng Sukhoi Su-27 để phát triển các dòng máy bay nào khác",
+    "options": [
+      {
+        "id": 1,
+        "text": "J-11, J-16,  Su-30, Su-33"
+      },
+      {
+        "id": 2,
+        "text": "Su-30, Su-33, Su-34, Su-35, Su-37"
+      },
+      {
+        "id": 3,
+        "text": "J-11, J-16, Su-30, Su-33, Su-34, Su-35, Su-37"
+      },
+      {
+        "id": 4,
+        "text": "J-11, J-16, Su-30, Su-33, Su-34, Su-35, Su-37. KJ-500"
+      },
+      {
+        "id": 5,
+        "text": "J-11, J-16, Su-30, Su-33, Su-34, Su-35, Su-37. KJ-200, KJ-500"
+      }
+    ]
+  },
+  {
+    "question": "Ai là hiệu trường của Trường ĐH Bách khoa TPHCM?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Vũ Đình Thành"
+      },
+      {
+        "id": 2,
+        "text": "Mai Thanh Phong"
+      },
+      {
+        "id": 3,
+        "text": "Phan Thị Tươi"
+      },
+      {
+        "id": 4,
+        "text": "Trương Minh Vệ"
+      },
+      {
+        "id": 5,
+        "text": "Huỳnh Văn Hoàng"
+      }
+    ]
+  },
+  {
+    "question": "Victor Hugo có tác phẩm nào là truyện tranh  không, kể tên.",
+    "options": [
+      {
+        "id": 1,
+        "text": "Có: Những người cùng khổ"
+      },
+      {
+        "id": 2,
+        "text": "Không có"
+      },
+      {
+        "id": 3,
+        "text": "Có: Ninety Three"
+      },
+      {
+        "id": 4,
+        "text": "Có: Thằng cười"
+      },
+      {
+        "id": 5,
+        "text": "Có: Nhà thờ Đức bà Paris"
+      }
+    ]
+  },
+  {
+    "question": "Nguyễn Hữu Cảnh có bao nhiêu người thân",
+    "options": [
+      {
+        "id": 1,
+        "text": "1"
+      },
+      {
+        "id": 2,
+        "text": "2"
+      },
+      {
+        "id": 3,
+        "text": "3"
+      },
+      {
+        "id": 4,
+        "text": "4"
+      },
+      {
+        "id": 5,
+        "text": "5"
+      }
+    ]
+  },
+  {
+    "question": "Có bao nhiêu người là nhà khoa học?",
+    "options": [
+      {
+        "id": 1,
+        "text": "nhỏ hơn 24000"
+      },
+      {
+        "id": 2,
+        "text": "nhỏ hơn 35000 và lớn hơn 24000"
+      },
+      {
+        "id": 3,
+        "text": "nhỏ hơn 42000 và lớn hơn 35000"
+      },
+      {
+        "id": 4,
+        "text": "lớn hơn  42000 và nhỏ hơn 50000"
+      },
+      {
+        "id": 5,
+        "text": "lớn hơn 50000"
+      }
+    ]
+  },
+  {
+    "question": "Có bao nhiêu tàu được vận hành bởi lực lượng Cảnh sát biển Hoa Kỳ",
+    "options": [
+      {
+        "id": 1,
+        "text": "72"
+      },
+      {
+        "id": 2,
+        "text": "73"
+      },
+      {
+        "id": 3,
+        "text": "74"
+      },
+      {
+        "id": 4,
+        "text": "75"
+      },
+      {
+        "id": 5,
+        "text": "75"
+      }
+    ]
+  },
+  {
+    "question": "Có bao nhiêu tàu vừa được vận hành bởi lực lượng Cảnh sát biển Việt Nam và cảnh sát biển Hoa Kỳ?",
+    "options": [
+      {
+        "id": 1,
+        "text": "1"
+      },
+      {
+        "id": 2,
+        "text": "2"
+      },
+      {
+        "id": 3,
+        "text": "3"
+      },
+      {
+        "id": 4,
+        "text": "4"
+      },
+      {
+        "id": 5,
+        "text": "5"
+      }
+    ]
+  },
+  {
+    "question": "Có mấy tàu có cảng đăng ký tại Cam Ranh?",
+    "options": [
+      {
+        "id": 1,
+        "text": "4"
+      },
+      {
+        "id": 2,
+        "text": "5"
+      },
+      {
+        "id": 3,
+        "text": "6"
+      },
+      {
+        "id": 4,
+        "text": "7"
+      },
+      {
+        "id": 5,
+        "text": "8"
+      }
+    ]
+  },
+  {
+    "question": "Có bao nhiêu chiếc máy bay có nguồn gốc từ Liên Xô cũ?",
+    "options": [
+      {
+        "id": 1,
+        "text": "71"
+      },
+      {
+        "id": 2,
+        "text": "72"
+      },
+      {
+        "id": 3,
+        "text": "73"
+      },
+      {
+        "id": 4,
+        "text": "74"
+      },
+      {
+        "id": 5,
+        "text": "75"
+      }
+    ]
+  },
+  {
+    "question": "Số lượng nghệ sĩ có ngày sinh từ 1986-01-01  trở về sau? (không quan trọng còn sống hay đã chết)",
+    "options": [
+      {
+        "id": 1,
+        "text": "22610"
+      },
+      {
+        "id": 2,
+        "text": "22611"
+      },
+      {
+        "id": 3,
+        "text": "22612"
+      },
+      {
+        "id": 4,
+        "text": "22613"
+      },
+      {
+        "id": 5,
+        "text": "22614"
+      }
+    ]
+  },
+  {
+    "question": "Số lượng trường đại học ở Việt Nam",
+    "options": [
+      {
+        "id": 1,
+        "text": "66"
+      },
+      {
+        "id": 2,
+        "text": "67"
+      },
+      {
+        "id": 3,
+        "text": "68"
+      },
+      {
+        "id": 4,
+        "text": "69"
+      },
+      {
+        "id": 5,
+        "text": "70"
+      }
+    ]
+  },
+  {
+    "question": "Nêu tổng số tác phẩm của Victor Hugo?",
+    "options": [
+      {
+        "id": 1,
+        "text": "16"
+      },
+      {
+        "id": 2,
+        "text": "17"
+      },
+      {
+        "id": 3,
+        "text": "18"
+      },
+      {
+        "id": 4,
+        "text": "19"
+      },
+      {
+        "id": 5,
+        "text": "20"
+      }
+    ]
+  },
+  {
+    "question": "Hãng Jiangnan Shipyard đã tạo ra bao nhiêu phương tiện giao thông rồi nhỉ?",
+    "options": [
+      {
+        "id": 1,
+        "text": "38"
+      },
+      {
+        "id": 2,
+        "text": "39"
+      },
+      {
+        "id": 3,
+        "text": "40"
+      },
+      {
+        "id": 4,
+        "text": "41"
+      },
+      {
+        "id": 5,
+        "text": "42"
+      }
+    ]
+  },
+  {
+    "question": "Liệt kê các tàu được vận hành bởi lực lượng cảnh sát biển Việt Nam",
+    "options": [
+      {
+        "id": 1,
+        "text": "USCGC_John_Midgett_(WHEC-726), USCGC_Douglas_Munro_(WHEC-724)"
+      },
+      {
+        "id": 2,
+        "text": "USCGC_John_Midgett_(WHEC-726), USCGC_Morgenthau_(WHEC-722)"
+      },
+      {
+        "id": 3,
+        "text": "USCGC_Morgenthau_(WHEC-722), USCGC_Douglas_Munro_(WHEC-724)"
+      },
+      {
+        "id": 4,
+        "text": "CSB 7002, CSB 7003"
+      },
+      {
+        "id": 5,
+        "text": "CSB 5002, CSB 5003"
+      }
+    ]
+  },
+  {
+    "question": "Kể tên các tàu  được vận hành bởi lực lượng Cảnh sát biển Hoa Kỳ và có chiều dài hơn 100?",
+    "options": [
+      {
+        "id": 1,
+        "text": "SS_Carroll_Victory USCGC_Douglas_Munro_(WHEC-724), USCGC_John_Midgett_(WHEC-726)"
+      },
+      {
+        "id": 2,
+        "text": "USCGC_Alexander_Hamilton, USCGC_Douglas_Munro_(WHEC-724), USCGC_John_Midgett_(WHEC-726)"
+      },
+      {
+        "id": 3,
+        "text": "SS_Carroll_Victory, USCGC_Alexander_Hamilton, USCGC_John_Midgett_(WHEC-726)"
+      },
+      {
+        "id": 4,
+        "text": "SS_Carroll_Victory USCGC_Douglas_Munro_(WHEC-724), USCGC_Alexander_Hamilton"
+      }
+    ]
+  },
+  {
+    "question": "Nêu tên tất cả tổ tiên của dòng máy bay Antonov An-325",
+    "options": [
+      {
+        "id": 1,
+        "text": "Antonov_An-225_Mriya"
+      },
+      {
+        "id": 2,
+        "text": "Antonov_An-124_Ruslan"
+      },
+      {
+        "id": 3,
+        "text": "Antonov_An-225_Mriya, Antonov_An-124_Ruslan"
+      },
+      {
+        "id": 4,
+        "text": "Antonov_An-225_Mriya, Antonov_An-124_Ruslan, dbr:Antonov_An-32"
+      },
+      {
+        "id": 5,
+        "text": "dbr:Antonov_An-32"
+      }
+    ]
+  },
+  {
+    "question": "Những  nhà sản xuất máy bay đã chọn dòng Sukhoi Su-27 để phát triển tiếp các model máy bay khác?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Shenyang Aircraft Corporation, Komsomolsk-on-Amur Aircraft Production Association, Novosibirsk Aircraft Production Association"
+      },
+      {
+        "id": 2,
+        "text": "Sukhoi, Komsomolsk-on-Amur Aircraft Production Association, Novosibirsk Aircraft Production Association"
+      },
+      {
+        "id": 3,
+        "text": "Shenyang Aircraft Corporation, Sukhoi, Komsomolsk-on-Amur Aircraft Production Association, Novosibirsk Aircraft Production Association"
+      },
+      {
+        "id": 4,
+        "text": "Shenyang Aircraft Corporation, Sukhoi, Komsomolsk-on-Amur Aircraft Production Association, Novosibirsk Aircraft Production Association, Ulan Ude Aviation Plant"
+      },
+      {
+        "id": 5,
+        "text": "Sukhoi, Komsomolsk-on-Amur Aircraft Production Association, Novosibirsk Aircraft Production Association, Ulan Ude Aviation Plant"
+      }
+    ]
+  },
+  {
+    "question": "Kể tên và sắp xếp thứ tự giảm dần về tốc độ tối đa của những con tàu mà hãng Admiralty Shipyards đóng",
+    "options": [
+      {
+        "id": 1,
+        "text": "Russian battleship Sissoi Veliky > Lenin (1957 icebreaker) >  Russian coast defense ship General-Admiral Apraksin"
+      },
+      {
+        "id": 2,
+        "text": "Russian battleship Sissoi Veliky > Russian coast defense ship General-Admiral Apraksin > Lenin (1957 icebreaker)"
+      },
+      {
+        "id": 3,
+        "text": "Russian coast defense ship General-Admiral Apraksin > Russian battleship Sissoi Veliky > Lenin (1957 icebreaker)"
+      },
+      {
+        "id": 4,
+        "text": "Lenin (1957 icebreaker) > Russian battleship Sissoi Veliky > Russian coast defense ship General-Admiral Apraksin"
+      },
+      {
+        "id": 5,
+        "text": "Lenin (1957 icebreaker)  > Russian coast defense ship General-Admiral Apraksin > Russian battleship Sissoi Veliky"
+      }
+    ]
+  },
+  {
+    "question": "Danh sách những con tàu thủy mà hãng Boeing đóng?",
+    "options": [
+      {
+        "id": 1,
+        "text": "hãng Being chỉ sản xuất máy bay, không sản xuất tàu"
+      },
+      {
+        "id": 2,
+        "text": "Echo Voyager"
+      },
+      {
+        "id": 3,
+        "text": "Tàu ngầm Orca"
+      },
+      {
+        "id": 4,
+        "text": "Boeing 314 Clipper"
+      },
+      {
+        "id": 5,
+        "text": "HMS Speedy (P296)"
+      }
+    ]
+  },
+  {
+    "question": "Đâu là các cặp vợ chồng cùng làm nghề thủy thủ hợp lệ?",
+    "options": [
+      {
+        "id": 1,
+        "text": "(Adelina Santos Rodriguez; Isidro Rodriguez); \n(Adeline Akufo-Addo; Edward Akufo-Addo)"
+      },
+      {
+        "id": 2,
+        "text": "(Ai Yoshida, Ai Yoshida), (Siren Sundby, Christopher Gundersen)"
+      },
+      {
+        "id": 3,
+        "text": "(Adham Baba; \nNor Zamani); \n(Adila Mutallibova; Ayaz Mutallibov)"
+      },
+      {
+        "id": 4,
+        "text": "(Abhishek Singhvi\n;Anita Singhvi); (Abida Hussain;\nFakhar_Imam)"
+      },
+      {
+        "id": 5,
+        "text": "(Abdel Fattah_el-Sisi; Entissar Amer); \n(Abdel Hakim Amer; Berlenti Abdul Hamid)"
+      }
+    ]
+  },
+  {
+    "question": "Hà Nội có phải là thủ đô của Việt Nam không?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Có"
+      },
+      {
+        "id": 2,
+        "text": "Không"
+      }
+    ]
+  },
+  {
+    "question": "Nguyễn Hữu Cảnh có mất tại cùng tỉnh với Hoàng Kế Viêm hay không?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Có"
+      },
+      {
+        "id": 2,
+        "text": "Không"
+      },
+      {
+        "id": 3,
+        "text": "Không có thông tin"
+      }
+    ]
+  },
+  {
+    "question": "Albert Einstein có phải sinh ra ở Đức bây giờ  không?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Có"
+      },
+      {
+        "id": 2,
+        "text": "Không"
+      }
+    ]
+  },
+  {
+    "question": "Tàu USCGC John Midgett có cảng đăng ký ở Việt Nam phải không?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Có"
+      },
+      {
+        "id": 2,
+        "text": "Không"
+      }
+    ]
+  },
+  {
+    "question": "Tàu ngầm Việt Nam Bà rịa Vũng tàu có cảng đăng ký ở Vũng Tàu luôn đúng không?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Có"
+      },
+      {
+        "id": 2,
+        "text": "Không"
+      }
+    ]
+  },
+  {
+    "question": "Có phải dòng máy bay Antonov An-225 Mriya bắt đầu sản xuất và dừng sản xuất trong cùng một năm đúng không?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Đúng"
+      },
+      {
+        "id": 2,
+        "text": "Sai"
+      }
+    ]
+  },
+  {
+    "question": "Hãng Mitsubishi Heavy Industries vừa sản xuất được tàu vừa sản xuất được máy bay đúng không",
+    "options": [
+      {
+        "id": 1,
+        "text": "Đúng"
+      },
+      {
+        "id": 2,
+        "text": "Sai, hãng này chỉ sản xuất được tàu"
+      },
+      {
+        "id": 3,
+        "text": "Sai, hãng này chỉ sản xuất được máy bay"
+      }
+    ]
+  },
+  {
+    "question": "Type 052D là lớp tàu hộ vệ tên lửa đúng không?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Đúng"
+      },
+      {
+        "id": 2,
+        "text": "Sai, là tàu vận tải đổ bộ"
+      },
+      {
+        "id": 3,
+        "text": "Sai, là tàu khu trục tên lửa"
+      },
+      {
+        "id": 4,
+        "text": "Sai, là tàu quét mìn"
+      },
+      {
+        "id": 5,
+        "text": "Sai, là tàu tuần duyên"
+      }
+    ]
+  },
+  {
+    "question": "Thủ đô của quốc gia nơi Elon Musk sinh ra là gì?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Bloemfontein"
+      },
+      {
+        "id": 2,
+        "text": "Hanoi"
+      },
+      {
+        "id": 3,
+        "text": "Bloemfontein, Cape Town, Pretoria"
+      },
+      {
+        "id": 4,
+        "text": "Pretoria"
+      },
+      {
+        "id": 5,
+        "text": "Cape Town"
+      }
+    ]
+  },
+  {
+    "question": "Vợ của tổng thống Donald Trump sinh ra ở quốc gia nào?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Hoa Kỳ"
+      },
+      {
+        "id": 2,
+        "text": "Slovenia"
+      },
+      {
+        "id": 3,
+        "text": "Nam Phi"
+      },
+      {
+        "id": 4,
+        "text": "Việt Nam"
+      },
+      {
+        "id": 5,
+        "text": "Canada"
+      }
+    ]
+  },
+  {
+    "question": "Kể tên vị trí của những nhà sản xuất máy bay đã chọn dòng Sukhoi Su-27 để phát triển tiếp các model máy bay khác?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Liaoning, Shenyang, Vietnam"
+      },
+      {
+        "id": 2,
+        "text": "Liaoning, Shenyang"
+      },
+      {
+        "id": 3,
+        "text": "Begoyoy District, Moscow, Russia"
+      },
+      {
+        "id": 4,
+        "text": "Liaoning, Shenyang, Begoyoy District, Moscow, Russia"
+      },
+      {
+        "id": 5,
+        "text": "VIetnam, Liaoning, Shenyang, Begoyoy District, Moscow, Russia"
+      }
+    ]
+  },
+  {
+    "question": "Ai cao hơn, Ronaldo hay Messi?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Ronaldo"
+      },
+      {
+        "id": 2,
+        "text": "Messi"
+      },
+      {
+        "id": 3,
+        "text": "bằng nhau"
+      }
+    ]
+  },
+  {
+    "question": "Thành phố nào đông dân hơn: Hà Nội hay TP.HCM?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Hà Nội"
+      },
+      {
+        "id": 2,
+        "text": "TPHCM"
+      },
+      {
+        "id": 3,
+        "text": "bằng nhau"
+      }
+    ]
+  },
+  {
+    "question": "Tàu khu trục lớp nào dài hơn: Type 055 hay Type 052D",
+    "options": [
+      {
+        "id": 1,
+        "text": "Bằng nhau"
+      },
+      {
+        "id": 2,
+        "text": "Type 052D"
+      },
+      {
+        "id": 3,
+        "text": "Type 055"
+      }
+    ]
+  },
+  {
+    "question": "So sánh về tốc độ tối đa  giữa1  con khu trục lớp Arleigh Burke của Mỹ và 1 con Type 052D của Trung Quốc thì con nào nhỉnh hơn",
+    "options": [
+      {
+        "id": 1,
+        "text": "lớp Arleigh Burke có tốc độ lớn hơn"
+      },
+      {
+        "id": 2,
+        "text": "lớp Type 052D có tốc độ lớn hơn"
+      },
+      {
+        "id": 3,
+        "text": "Không có thông tin để trả lời"
+      },
+      {
+        "id": 4,
+        "text": "Như nhau, đều là 55.56"
+      }
+    ]
+  },
+  {
+    "question": "Liệt kê các loại nhà khoa học",
+    "options": [
+      {
+        "id": 1,
+        "text": "Biologist"
+      },
+      {
+        "id": 2,
+        "text": "Biologist, Entomologis"
+      },
+      {
+        "id": 3,
+        "text": "Biologist, Entomologist, Medician"
+      },
+      {
+        "id": 4,
+        "text": "Biologist, Entomologist, Medician, Professor"
+      },
+      {
+        "id": 5,
+        "text": "Biologist, Entomologist, Medician, Professor, Astronomer"
+      }
+    ]
+  },
+  {
+    "question": "Dòng máy bay Antonov An-26 thuộc loại máy bay gì?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Turboprop"
+      },
+      {
+        "id": 2,
+        "text": "Military transport aircraft"
+      },
+      {
+        "id": 3,
+        "text": "Reconnaissance aircraft"
+      },
+      {
+        "id": 4,
+        "text": "Cartography"
+      },
+      {
+        "id": 5,
+        "text": "Fighter"
+      }
+    ]
+  },
+  {
+    "question": "Mitsubishi Ki-1 là dòng gì?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Tàu chiến"
+      },
+      {
+        "id": 2,
+        "text": "Xe ô tô"
+      },
+      {
+        "id": 3,
+        "text": "Máy bay ném bom"
+      },
+      {
+        "id": 4,
+        "text": "Tàu vận tải quân sự"
+      },
+      {
+        "id": 5,
+        "text": "Xe tăng"
+      }
+    ]
+  },
+  {
+    "question": "Đâu là một loại hình công trình/hay tác phẩm phù hợp của Victor Hugo?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Comic"
+      },
+      {
+        "id": 2,
+        "text": "Academic Journal"
+      },
+      {
+        "id": 3,
+        "text": "Magazine"
+      },
+      {
+        "id": 4,
+        "text": "National Anthem"
+      },
+      {
+        "id": 5,
+        "text": "Opera"
+      }
+    ]
+  },
+  {
+    "question": "Thuộc tính mớn nước của một tàu có tên đúng trong KB này  là gì?",
+    "options": [
+      {
+        "id": 1,
+        "text": "draught"
+      },
+      {
+        "id": 2,
+        "text": "shipDraught"
+      },
+      {
+        "id": 3,
+        "text": "vesselDraft"
+      },
+      {
+        "id": 4,
+        "text": "vesselDraught"
+      },
+      {
+        "id": 5,
+        "text": "shipDraft"
+      }
+    ]
+  },
+  {
+    "question": "Thuộc tính trần bay của một máy bay có tên đúng trong KB này  là gì?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Không có thuộc tính trần bay"
+      },
+      {
+        "id": 2,
+        "text": "ceiling"
+      },
+      {
+        "id": 3,
+        "text": "serviceCeiling"
+      },
+      {
+        "id": 4,
+        "text": "aircraftCeiling"
+      },
+      {
+        "id": 5,
+        "text": "maximumAltitude"
+      }
+    ]
+  },
+  {
+    "question": "Dân số của Thành phố Hồ Chí Minh là bao nhiêu?",
+    "options": [
+      {
+        "id": 1,
+        "text": "8993081"
+      },
+      {
+        "id": 2,
+        "text": "8993082"
+      },
+      {
+        "id": 3,
+        "text": "8993083"
+      },
+      {
+        "id": 4,
+        "text": "8993084"
+      },
+      {
+        "id": 5,
+        "text": "8993085"
+      }
+    ]
+  },
+  {
+    "question": "Hàn Mặc Tử mất vào ngày tháng năm nào?",
+    "options": [
+      {
+        "id": 1,
+        "text": "11/11/1940"
+      },
+      {
+        "id": 2,
+        "text": "12/11/1940"
+      },
+      {
+        "id": 3,
+        "text": "11/10/1940"
+      },
+      {
+        "id": 4,
+        "text": "11/9/1940"
+      },
+      {
+        "id": 5,
+        "text": "12/9/1940"
+      }
+    ]
+  },
+  {
+    "question": "Tên khai sinh của Hàn Mặc Tử là gì",
+    "options": [
+      {
+        "id": 1,
+        "text": "Francis Nguyễn Trọng Triều"
+      },
+      {
+        "id": 2,
+        "text": "Francis Nguyễn Văn Triều"
+      },
+      {
+        "id": 3,
+        "text": "Francis Nguyễn Trọng Trí"
+      },
+      {
+        "id": 4,
+        "text": "Francis Nguyễn Văn Trí"
+      },
+      {
+        "id": 5,
+        "text": "Francis Trần Văn Triều"
+      }
+    ]
+  },
+  {
+    "question": "Chiều cao của Cristiano Ronaldo là gì?",
+    "options": [
+      {
+        "id": 1,
+        "text": "1.86"
+      },
+      {
+        "id": 2,
+        "text": "1.87"
+      },
+      {
+        "id": 3,
+        "text": "1.88"
+      },
+      {
+        "id": 4,
+        "text": "1.89"
+      },
+      {
+        "id": 5,
+        "text": "1.85"
+      }
+    ]
+  },
+  {
+    "question": "Tàu USCGC Morgenthau (WHEC-722) chính thức vào biên chế ngày mấy?",
+    "options": [
+      {
+        "id": 1,
+        "text": "1969-03-07"
+      },
+      {
+        "id": 2,
+        "text": "1969-03-08"
+      },
+      {
+        "id": 3,
+        "text": "1969-03-09"
+      },
+      {
+        "id": 4,
+        "text": "1969-03-10"
+      },
+      {
+        "id": 5,
+        "text": "1969-03-11"
+      }
+    ]
+  },
+  {
+    "question": "Tàu sân bay Liaoning có chiều dài bao nhiêu?",
+    "options": [
+      {
+        "id": 1,
+        "text": "301.1"
+      },
+      {
+        "id": 2,
+        "text": "306.4"
+      },
+      {
+        "id": 3,
+        "text": "310.5"
+      },
+      {
+        "id": 4,
+        "text": "320.5"
+      },
+      {
+        "id": 5,
+        "text": "332.9"
+      }
+    ]
+  },
+  {
+    "question": "HMCS Margaret Brooke có tốc độ tối đa là bao nhiêu",
+    "options": [
+      {
+        "id": 1,
+        "text": "\"31.486\""
+      },
+      {
+        "id": 2,
+        "text": "\"31.584\""
+      },
+      {
+        "id": 3,
+        "text": "\"31.485\""
+      },
+      {
+        "id": 4,
+        "text": "\"31.494\""
+      },
+      {
+        "id": 5,
+        "text": "\"31.484\""
+      }
+    ]
+  },
+  {
+    "question": "Có bao nhiêu chiếc máy bay Cessna 150 được sản xuất rồi",
+    "options": [
+      {
+        "id": 1,
+        "text": "\"23838\""
+      },
+      {
+        "id": 2,
+        "text": "\"23839\""
+      },
+      {
+        "id": 3,
+        "text": "\"23840\""
+      },
+      {
+        "id": 4,
+        "text": "\"23841\""
+      },
+      {
+        "id": 5,
+        "text": "\"23842\""
+      }
+    ]
+  },
+  {
+    "question": "Ấn phẩm Những người cùng khổ phiên bản truyện tranh của Victor Hugo được xuất bản lần đầu tiên vào năm mấy?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Năm 2013"
+      },
+      {
+        "id": 2,
+        "text": "Năm 2014"
+      },
+      {
+        "id": 3,
+        "text": "Năm 2015"
+      },
+      {
+        "id": 4,
+        "text": "Năm 2016"
+      },
+      {
+        "id": 5,
+        "text": "Victor Hugo không có truyện tranh nào cả"
+      }
+    ]
+  },
+  {
+    "question": "Thành phố có tổng số người dân ít nhất Việt Nam là gì?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Bắc Kạn"
+      },
+      {
+        "id": 2,
+        "text": "TPHCM"
+      },
+      {
+        "id": 3,
+        "text": "Hà Nội"
+      },
+      {
+        "id": 4,
+        "text": "Tây Ninh"
+      },
+      {
+        "id": 5,
+        "text": "Dĩ An"
+      }
+    ]
+  },
+  {
+    "question": "Ngọn núi cao nhất thế giới là gì?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Alpide belt"
+      },
+      {
+        "id": 2,
+        "text": "Himalayas"
+      },
+      {
+        "id": 3,
+        "text": "Mahalagur Himal"
+      },
+      {
+        "id": 4,
+        "text": "Karrakoram"
+      },
+      {
+        "id": 5,
+        "text": "Kangchenjunga"
+      }
+    ]
+  },
+  {
+    "question": "Tàu nào được vào biên chế muộn nhất",
+    "options": [
+      {
+        "id": 1,
+        "text": "INS Vikrant (2013)"
+      },
+      {
+        "id": 2,
+        "text": "HMCS Margaret Brooke"
+      },
+      {
+        "id": 3,
+        "text": "Brazilian submarine Riachuelo (S40)"
+      },
+      {
+        "id": 4,
+        "text": "HMS Anson"
+      },
+      {
+        "id": 5,
+        "text": "CCGS Jean Goodwill"
+      }
+    ]
+  },
+  {
+    "question": "Máy bay vận tải quân sự nào có số lượng sản xuất nhiều nhất, bao nhiêu chiếc?",
+    "options": [
+      {
+        "id": 1,
+        "text": "Antonov_An-2, 17000 chiếc"
+      },
+      {
+        "id": 2,
+        "text": "Mil_Mi-8, 18000 chiếc"
+      },
+      {
+        "id": 3,
+        "text": "Antonov_An-2, 18000 chiếc"
+      },
+      {
+        "id": 4,
+        "text": "Mil_Mi-8, 17000 chiếc"
+      }
+    ]
+  },
+  {
+    "question": "Trong các công ty vừa sản xuất được tàu vừa sản xuất được máy bay, công ty nào có số lượng nhân viên lớn nhất, cụ thể là bao nhiêu",
+    "options": [
+      {
+        "id": 1,
+        "text": "Mitsubishi Heavy Industries, 2275578485 nhân viên"
+      },
+      {
+        "id": 2,
+        "text": "Daewoo, 320000 nhân viên"
+      },
+      {
+        "id": 3,
+        "text": "Daewoo, 2275578486 nhân viên"
+      },
+      {
+        "id": 4,
+        "text": "Mitsubishi Heavy Industries, 2275578486 nhân viên"
+      },
+      {
+        "id": 5,
+        "text": "Daewoo, 2275578485  nhân viên"
+      }
+    ]
+  }
+]
