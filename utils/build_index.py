@@ -6,8 +6,11 @@ from typing import Any, Iterator
 from urllib.parse import unquote
 
 from elasticsearch import Elasticsearch, helpers
+from openai import OpenAI
 from tqdm import tqdm
+from dotenv import load_dotenv
 
+load_dotenv()
 
 ES_URL = os.environ.get("ELASTICSEARCH_URL", "http://localhost:9200")
 ENTITY_INDEX = os.environ.get("ENTITY_INDEX", "entity_index")
@@ -16,6 +19,14 @@ SCHEMA_INDEX = os.environ.get("SCHEMA_INDEX", "schema_index")
 DATA_DIR = os.environ.get("DATA_DIR", "data")
 INSTANCE_FILE = os.environ.get("INSTANCE_FILE", os.path.join(DATA_DIR, "instance-types.ttl"))
 ONTOLOGY_FILE = os.environ.get("ONTOLOGY_FILE", os.path.join(DATA_DIR, "ontology--DEV_type=parsed_sorted.nt"))
+
+OPENROUTER_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+OPENROUTER_EMBEDDING_MODEL = os.environ.get("OPENROUTER_EMBEDDING_MODEL", "baai/bge-m3")
+SCHEMA_VECTOR_FIELD = os.environ.get("SCHEMA_VECTOR_FIELD", "schema_vector")
+SCHEMA_VECTOR_DIMS = int(os.environ.get("SCHEMA_VECTOR_DIMS", "1024"))
+ENABLE_SCHEMA_DENSE = os.environ.get("ENABLE_SCHEMA_DENSE", "true").lower() == "true"
+EMBEDDING_BATCH_SIZE = int(os.environ.get("EMBEDDING_BATCH_SIZE", "64"))
 
 RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
 RDFS_LABEL = "http://www.w3.org/2000/01/rdf-schema#label"
@@ -50,6 +61,23 @@ def connect_es() -> Elasticsearch:
 
 
 es = connect_es()
+
+
+def build_embedding_client() -> OpenAI:
+    return OpenAI(
+        base_url=OPENROUTER_BASE_URL,
+        api_key=OPENROUTER_API_KEY,
+    )
+
+
+def require_embedding_config() -> None:
+    if not ENABLE_SCHEMA_DENSE:
+        return
+    if not OPENROUTER_API_KEY:
+        raise RuntimeError(
+            "OPENROUTER_API_KEY is required when ENABLE_SCHEMA_DENSE=true. "
+            "Set ENABLE_SCHEMA_DENSE=false to skip schema vector indexing."
+        )
 
 
 def decode_nt_escape(value: str) -> str:
@@ -278,6 +306,12 @@ def init_indices() -> None:
                         },
                     },
                 },
+                SCHEMA_VECTOR_FIELD: {
+                    "type": "dense_vector",
+                    "dims": SCHEMA_VECTOR_DIMS,
+                    "index": True,
+                    "similarity": "cosine",
+                },
             }
         },
     )
@@ -339,6 +373,9 @@ def build_schema_docs() -> dict[str, dict[str, Any]]:
         doc["kind"] = kind
         typed_docs[uri] = doc
 
+    if ENABLE_SCHEMA_DENSE:
+        attach_schema_embeddings(typed_docs)
+
     return typed_docs
 
 
@@ -354,7 +391,77 @@ def new_schema_doc(uri: str) -> dict[str, Any]:
         "range": "",
         "domain_label": "",
         "range_label": "",
+        SCHEMA_VECTOR_FIELD: None,
     }
+    
+
+def schema_embedding_text(doc):
+    parts = []
+
+    labels = doc.get("labels", [])
+    if not labels and doc.get("local_name"):
+        labels = [str(doc["local_name"])]
+
+    if labels:
+        parts.append(f"Entity: {', '.join(labels)}.")
+
+    if doc.get("local_name"):
+        parts.append(f"Identifier: {doc['local_name']}.")
+
+    comments = doc.get("comments", [])
+    if comments:
+        parts.append(f"Description: {' '.join(comments)}.")
+
+    kind = doc.get("kind")
+
+    if kind == "property":
+        domain = doc.get("domain_label") or "Any"
+        range_ = doc.get("range_label") or "Any"
+        parts.append(f"Schema Context: This property links instances of {domain} to instances of {range_}.")
+
+    elif kind == "class":
+        label = labels[0] if labels else doc.get("local_name", "Unknown")
+        parts.append(f"Schema Context: This class represents entities of type {label}.")
+
+    return " ".join(parts)
+
+
+def attach_schema_embeddings(schema_docs: dict[str, dict[str, Any]]) -> None:
+    if not schema_docs:
+        return
+
+    require_embedding_config()
+    client = build_embedding_client()
+    uris = list(schema_docs.keys())
+
+    print(
+        f"Generating schema embeddings with {OPENROUTER_EMBEDDING_MODEL} "
+        f"for {len(uris)} docs (batch_size={EMBEDDING_BATCH_SIZE})"
+    )
+
+    for offset in tqdm(range(0, len(uris), EMBEDDING_BATCH_SIZE), desc="Embedding schema"):
+        batch_uris = uris[offset : offset + EMBEDDING_BATCH_SIZE]
+        texts = [schema_embedding_text(schema_docs[uri]) for uri in batch_uris]
+
+        response = client.embeddings.create(
+            model=OPENROUTER_EMBEDDING_MODEL,
+            input=texts,
+        )
+        vectors = [item.embedding for item in response.data]
+
+        if len(vectors) != len(batch_uris):
+            raise RuntimeError(
+                "Embedding batch size mismatch: "
+                f"expected {len(batch_uris)}, got {len(vectors)}"
+            )
+
+        for uri, vector in zip(batch_uris, vectors):
+            if len(vector) != SCHEMA_VECTOR_DIMS:
+                raise RuntimeError(
+                    f"Embedding dims mismatch for {uri}: "
+                    f"expected {SCHEMA_VECTOR_DIMS}, got {len(vector)}"
+                )
+            schema_docs[uri][SCHEMA_VECTOR_FIELD] = vector
 
 
 def stream_schema_docs() -> Iterator[dict[str, Any]]:
@@ -453,6 +560,12 @@ def main() -> int:
         return 1
     if not os.path.exists(ONTOLOGY_FILE):
         print(f"Missing ontology file: {ONTOLOGY_FILE}", file=sys.stderr)
+        return 1
+
+    try:
+        require_embedding_config()
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
         return 1
 
     init_indices()

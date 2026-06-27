@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import os
+import sys
 from functools import lru_cache
 from typing import Any, Literal
 
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ApiError, TransportError
 from langchain_core.tools import tool
+from openai import OpenAI
 
 
 ENTITY_MODE = "entity"
@@ -25,6 +27,63 @@ def _schema_index() -> str:
     return _env("SCHEMA_INDEX", "schema_index")
 
 
+def _hybrid_search_enabled() -> bool:
+    return _env("HYBRID_SEARCH_ENABLED", "true").lower() == "true"
+
+
+def _schema_vector_field() -> str:
+    return _env("SCHEMA_VECTOR_FIELD", "schema_vector")
+
+
+def _openrouter_base_url() -> str:
+    return _env("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+
+
+def _openrouter_embedding_model() -> str:
+    return _env("OPENROUTER_EMBEDDING_MODEL", "baai/bge-m3")
+
+
+def _rrf_window_size() -> int:
+    try:
+        value = int(_env("RRF_WINDOW_SIZE", "50"))
+    except (TypeError, ValueError):
+        value = 50
+    return max(10, min(value, 200))
+
+
+def _rrf_fuse_results(
+    lexical_hits: list[dict[str, Any]],
+    dense_hits: list[dict[str, Any]],
+    limit: int,
+    rrf_k: int = 60,
+) -> list[dict[str, Any]]:
+    fused: dict[str, dict[str, Any]] = {}
+
+    def apply_ranked_hits(hits: list[dict[str, Any]], source_name: str) -> None:
+        for rank, hit in enumerate(hits, start=1):
+            source = hit.get("_source", {})
+            uri = str(source.get("uri") or "")
+            if not uri:
+                continue
+
+            fused_hit = fused.setdefault(
+                uri,
+                {
+                    "_source": source,
+                    "_score": 0.0,
+                },
+            )
+            fused_hit["_score"] = float(fused_hit.get("_score") or 0.0) + (1.0 / (rrf_k + rank))
+            if source_name == "lexical":
+                fused_hit["_source"] = source
+
+    apply_ranked_hits(lexical_hits, "lexical")
+    apply_ranked_hits(dense_hits, "dense")
+
+    ranked = sorted(fused.values(), key=lambda item: item.get("_score", 0.0), reverse=True)
+    return ranked[:_clamp_limit(limit)]
+
+
 @lru_cache(maxsize=1)
 def get_es_client() -> Elasticsearch:
     """Create a cached Elasticsearch client from environment configuration."""
@@ -33,6 +92,17 @@ def get_es_client() -> Elasticsearch:
         request_timeout=30,
         max_retries=3,
         retry_on_timeout=True,
+    )
+
+
+@lru_cache(maxsize=1)
+def get_embedding_client() -> OpenAI | None:
+    api_key = os.environ.get("OPENROUTER_API_KEY")
+    if not api_key:
+        return None
+    return OpenAI(
+        base_url=_openrouter_base_url(),
+        api_key=api_key,
     )
 
 
@@ -151,7 +221,7 @@ def _search_schema(
     if clean_fuzziness:
         multi_match["fuzziness"] = clean_fuzziness
 
-    body = {
+    lexical_query = {
         "query": {
             "bool": {
                 "filter": [{"term": {"kind": kind}}],
@@ -163,16 +233,60 @@ def _search_schema(
     }
 
     try:
-        response = get_es_client().search(
+        lexical_response = get_es_client().search(
             index=_schema_index(),
             size=_clamp_limit(limit),
-            query=body["query"],
+            query=lexical_query["query"],
         )
     except (ApiError, TransportError) as exc:
         raise RuntimeError(f"Elasticsearch search failed: {exc}") from exc
 
-    hits = response.get("hits", {}).get("hits", [])
-    return [_normalize_hit(hit, SCHEMA_MODE) for hit in hits]
+    lexical_hits = lexical_response.get("hits", {}).get("hits", [])
+
+    if _hybrid_search_enabled():
+        client = get_embedding_client()
+        if client is not None:
+            try:
+                embedding_response = client.embeddings.create(
+                    model=_openrouter_embedding_model(),
+                    input=clean_query,
+                )
+                query_vector = embedding_response.data[0].embedding
+
+                dense_response = get_es_client().search(
+                    index=_schema_index(),
+                    size=_clamp_limit(limit),
+                    knn={
+                        "field": _schema_vector_field(),
+                        "query_vector": query_vector,
+                        "k": max(_clamp_limit(limit), _clamp_limit(limit) * 5),
+                        "num_candidates": max(50, _clamp_limit(limit) * 5),
+                        "filter": [{"term": {"kind": kind}}],
+                    },
+                )
+
+                dense_hits = dense_response.get("hits", {}).get("hits", [])
+                fused_hits = _rrf_fuse_results(
+                    lexical_hits,
+                    dense_hits,
+                    limit=limit,
+                    rrf_k=_rrf_window_size(),
+                )
+                return [_normalize_hit(hit, SCHEMA_MODE) for hit in fused_hits]
+            except (ApiError, TransportError) as exc:
+                print(
+                    "Hybrid schema search failed at Elasticsearch, fallback lexical-only: "
+                    f"{exc}",
+                    file=sys.stderr,
+                )
+            except Exception as exc:
+                print(
+                    "Hybrid schema search failed at embedding step, fallback lexical-only: "
+                    f"{exc}",
+                    file=sys.stderr,
+                )
+
+    return [_normalize_hit(hit, SCHEMA_MODE) for hit in lexical_hits]
 
 
 @tool
@@ -214,7 +328,7 @@ def search_entity_by_label(
 @tool
 def search_property_by_label(
     query: str,
-    limit: int = 10,
+    limit: int = 20,
     fuzziness: str | None = "AUTO",
 ) -> list[dict[str, Any]]:
     """Search DBpedia ontology properties by label or description.

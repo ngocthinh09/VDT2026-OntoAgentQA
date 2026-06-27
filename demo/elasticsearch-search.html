@@ -148,6 +148,21 @@
       font-size: 13px;
     }
 
+    .advanced {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 180px minmax(220px, 1fr) 170px minmax(220px, 1fr) 120px 150px;
+      gap: 10px 12px;
+      align-items: end;
+    }
+
+    .advanced .hint-inline {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: -2px;
+    }
+
     .status {
       margin-top: 14px;
       padding: 10px 12px;
@@ -278,6 +293,7 @@
       .topbar { align-items: stretch; flex-direction: column; }
       .endpoint { min-width: 0; }
       .grid { grid-template-columns: 1fr; }
+      .advanced { grid-template-columns: 1fr; }
       .content { grid-template-columns: 1fr; }
     }
   </style>
@@ -324,6 +340,46 @@
       <div class="hint">
         Entity uses <code>entity_index</code>. Property/Class use <code>schema_index</code> with the <code>kind</code> filter.
       </div>
+      <div class="advanced">
+        <div>
+          <label for="hybridSchema">Schema mode</label>
+          <label class="toggle-field">
+            <input id="hybridSchema" type="checkbox" checked />
+            Hybrid (kNN + RRF)
+          </label>
+        </div>
+        <div>
+          <label for="embedModel">Embedding model</label>
+          <input id="embedModel" value="baai/bge-m3" />
+        </div>
+        <div>
+          <label for="rrfWindow">RRF window</label>
+          <input id="rrfWindow" type="number" min="10" max="200" value="50" />
+        </div>
+        <div>
+          <label for="rrfK">RRF k</label>
+          <input id="rrfK" type="number" min="1" max="500" value="60" />
+        </div>
+        <div>
+          <label for="vectorField">Vector field</label>
+          <input id="vectorField" value="schema_vector" />
+        </div>
+        <div>
+          <label for="openrouterBase">OpenRouter base</label>
+          <input id="openrouterBase" value="https://openrouter.ai/api/v1" />
+        </div>
+        <div>
+          <label for="openrouterKey">OpenRouter API key (demo only)</label>
+          <input id="openrouterKey" type="password" placeholder="sk-or-v1-..." />
+        </div>
+        <div>
+          <label for="labelBoost">Label boost</label>
+          <input id="labelBoost" type="number" min="1" max="20" step="0.5" value="4" />
+        </div>
+        <div class="hint-inline">
+          Hybrid chỉ áp dụng cho Property/Class. Nếu thiếu API key hoặc embedding lỗi, demo tự fallback lexical-only.
+        </div>
+      </div>
       <div id="status" class="status"></div>
     </section>
 
@@ -359,34 +415,40 @@
     const resultsEl = document.getElementById('results');
     const countEl = document.getElementById('count');
     const requestPreviewEl = document.getElementById('requestPreview');
+    const hybridSchemaEl = document.getElementById('hybridSchema');
+    const embedModelEl = document.getElementById('embedModel');
+    const rrfWindowEl = document.getElementById('rrfWindow');
+    const rrfKEl = document.getElementById('rrfK');
+    const vectorFieldEl = document.getElementById('vectorField');
+    const openrouterBaseEl = document.getElementById('openrouterBase');
+    const openrouterKeyEl = document.getElementById('openrouterKey');
+    const labelBoostEl = document.getElementById('labelBoost');
 
-    function buildRequest() {
-      const mode = modeEl.value;
-      const query = queryEl.value.trim();
-      const size = Math.max(1, Math.min(50, Number(sizeEl.value) || 10));
-      const fuzzy = fuzzyEl.checked;
+    function cleanEndpoint(value) {
+      return String(value || '').replace(/\/+$/, '');
+    }
 
-      if (mode === 'entity') {
-        const entityMatch = {
-          query,
-          fields: ['label^4', 'type_labels']
-        };
-        if (fuzzy) entityMatch.fuzziness = 'AUTO';
+    function clamp(value, min, max, fallback) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return fallback;
+      return Math.max(min, Math.min(max, Math.floor(num)));
+    }
 
-        return {
-          index: 'entity_index',
-          body: {
-            size,
-            query: {
-              multi_match: entityMatch
-            }
-          }
-        };
-      }
+    function clampFloat(value, min, max, fallback) {
+      const num = Number(value);
+      if (!Number.isFinite(num)) return fallback;
+      return Math.max(min, Math.min(max, num));
+    }
 
+    function currentLabelBoost() {
+      return clampFloat(labelBoostEl.value, 1, 20, 4);
+    }
+
+    function buildLexicalRequest({ mode, query, size, fuzzy }) {
+      const labelBoost = currentLabelBoost();
       const schemaFields = mode === 'class'
-        ? ['labels^4', 'comments']
-        : ['labels^4', 'comments', 'domain_label', 'range_label'];
+        ? [`labels^${labelBoost}`, 'comments']
+        : [`labels^${labelBoost}`, 'comments', `domain_label`, `range_label`];
 
       const schemaMatch = {
         query,
@@ -410,9 +472,155 @@
       };
     }
 
-    function updatePreview() {
-      const req = buildRequest();
-      requestPreviewEl.textContent = `POST /${req.index}/_search\n` + JSON.stringify(req.body, null, 2);
+    async function createQueryEmbedding(query) {
+      const apiKey = openrouterKeyEl.value.trim();
+      if (!apiKey) {
+        throw new Error('Missing OpenRouter API key for hybrid search.');
+      }
+
+      const base = cleanEndpoint(openrouterBaseEl.value || 'https://openrouter.ai/api/v1');
+      const model = (embedModelEl.value || 'baai/bge-m3').trim();
+      const url = `${base}/embeddings`;
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+          model,
+          input: query
+        })
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Embedding API failed (${res.status}): ${text}`);
+      }
+
+      const payload = await res.json();
+      const vector = payload?.data?.[0]?.embedding;
+      if (!Array.isArray(vector) || !vector.length) {
+        throw new Error('Embedding response has no vector data.');
+      }
+      return vector;
+    }
+
+    function rrfFuseResults(lexicalHits, denseHits, limit, rrfK = 60) {
+      const fused = new Map();
+
+      function addHits(hits) {
+        hits.forEach((hit, index) => {
+          const source = hit._source || {};
+          const uri = source.uri || '';
+          if (!uri) return;
+
+          const current = fused.get(uri) || { _source: source, _score: 0 };
+          current._score += 1 / (rrfK + index + 1);
+          if (!current._source || !current._source.uri) {
+            current._source = source;
+          }
+          fused.set(uri, current);
+        });
+      }
+
+      addHits(lexicalHits || []);
+      addHits(denseHits || []);
+
+      return [...fused.values()]
+        .sort((a, b) => (b._score || 0) - (a._score || 0))
+        .slice(0, limit);
+    }
+
+    async function buildSearchPlan() {
+      const mode = modeEl.value;
+      const query = queryEl.value.trim();
+      const size = clamp(sizeEl.value, 1, 50, 10);
+      const fuzzy = fuzzyEl.checked;
+      const labelBoost = currentLabelBoost();
+
+      if (mode === 'entity') {
+        const entityMatch = {
+          query,
+          fields: [`label^${labelBoost}`, `type_labels`]
+        };
+        if (fuzzy) entityMatch.fuzziness = 'AUTO';
+
+        return {
+          index: 'entity_index',
+          lexicalBody: {
+            size,
+            query: {
+              multi_match: entityMatch
+            }
+          }
+        };
+      }
+
+      const lexical = buildLexicalRequest({ mode, query, size, fuzzy });
+      if (!hybridSchemaEl.checked) {
+        return {
+          index: lexical.index,
+          lexicalBody: lexical.body,
+          hybridUsed: false
+        };
+      }
+
+      try {
+        const queryVector = await createQueryEmbedding(query);
+        const vectorField = (vectorFieldEl.value || 'schema_vector').trim() || 'schema_vector';
+        const rrfK = clamp(rrfKEl.value, 1, 500, 60);
+
+        return {
+          index: lexical.index,
+          hybridUsed: true,
+          rrfK,
+          lexicalBody: lexical.body,
+          denseBody: {
+            size,
+            knn: {
+              field: vectorField,
+              query_vector: queryVector,
+              k: size,
+              num_candidates: Math.max(50, size * 5),
+              filter: [{ term: { kind: mode } }]
+            }
+          }
+        };
+      } catch (error) {
+        setStatus('ok', `Hybrid unavailable, fallback lexical-only.\n${String(error.message || error)}`);
+        return {
+          index: lexical.index,
+          lexicalBody: lexical.body,
+          hybridUsed: false
+        };
+      }
+    }
+
+    async function updatePreview() {
+      const query = queryEl.value.trim();
+      if (!query) {
+        requestPreviewEl.textContent = 'POST /<index>/_search\n{\n  "query": "..."\n}';
+        return;
+      }
+
+      try {
+        const req = await buildSearchPlan();
+        if (req.hybridUsed && req.denseBody) {
+          requestPreviewEl.textContent = [
+            `POST /${req.index}/_search  # lexical`,
+            JSON.stringify(req.lexicalBody, null, 2),
+            '',
+            `POST /${req.index}/_search  # dense knn`,
+            JSON.stringify(req.denseBody, null, 2),
+          ].join('\n');
+        } else {
+          requestPreviewEl.textContent = `POST /${req.index}/_search\n` + JSON.stringify(req.lexicalBody, null, 2);
+        }
+      } catch (error) {
+        requestPreviewEl.textContent = String(error.message || error);
+      }
     }
 
     function setStatus(type, message) {
@@ -479,33 +687,63 @@
         return;
       }
 
-      const req = buildRequest();
-      const endpoint = endpointEl.value.replace(/\/+$/, '');
-      const url = `${endpoint}/${req.index}/_search`;
-      updatePreview();
-      setStatus('', '');
+      const req = await buildSearchPlan();
+      const endpoint = cleanEndpoint(endpointEl.value);
+      await updatePreview();
       searchBtn.disabled = true;
       searchBtn.textContent = 'Searching...';
 
       try {
-        const res = await fetch(url, {
+        const url = `${endpoint}/${req.index}/_search`;
+        const lexicalPromise = fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(req.body)
+          body: JSON.stringify(req.lexicalBody)
         });
 
-        if (!res.ok) {
-          const text = await res.text();
-          throw new Error(`HTTP ${res.status}: ${text}`);
+        let densePromise = null;
+        if (req.hybridUsed && req.denseBody) {
+          densePromise = fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(req.denseBody)
+          });
         }
 
-        const data = await res.json();
-        const hits = data.hits?.hits || [];
-        countEl.textContent = `${hits.length} shown / ${data.hits?.total?.value ?? 0} total`;
+        const lexicalRes = await lexicalPromise;
+        if (!lexicalRes.ok) {
+          const text = await lexicalRes.text();
+          throw new Error(`HTTP ${lexicalRes.status}: ${text}`);
+        }
+
+        let denseHits = [];
+        if (densePromise) {
+          const denseRes = await densePromise;
+          if (denseRes.ok) {
+            const denseData = await denseRes.json();
+            denseHits = denseData.hits?.hits || [];
+          } else {
+            const text = await denseRes.text();
+            setStatus('ok', `Dense query rejected, fallback to lexical-only.\nHTTP ${denseRes.status}: ${text}`);
+          }
+        }
+
+        const lexicalData = await lexicalRes.json();
+        const lexicalHits = lexicalData.hits?.hits || [];
+        const hits = req.hybridUsed && denseHits.length
+          ? rrfFuseResults(lexicalHits, denseHits, clamp(sizeEl.value, 1, 50, 10), req.rrfK || clamp(rrfKEl.value, 1, 500, 60))
+          : lexicalHits;
+
+        if (req.hybridUsed && denseHits.length) {
+          setStatus('ok', `OK: hybrid search on ${req.index} with client-side RRF (k=${clamp(rrfKEl.value, 1, 500, 60)})`);
+        } else {
+          setStatus('ok', `OK: searched ${req.index}`);
+        }
+
+        countEl.textContent = `${hits.length} shown / ${lexicalData.hits?.total?.value ?? 0} total`;
         resultsEl.innerHTML = hits.length
           ? hits.map(hit => modeEl.value === 'entity' ? renderEntity(hit) : renderSchema(hit)).join('')
           : '<div class="empty">No results found.</div>';
-        setStatus('ok', `OK: searched ${req.index}`);
       } catch (err) {
         resultsEl.innerHTML = '<div class="empty">Search failed.</div>';
         countEl.textContent = 'Error';
@@ -525,6 +763,14 @@
     queryEl.addEventListener('input', updatePreview);
     endpointEl.addEventListener('input', updatePreview);
     fuzzyEl.addEventListener('change', updatePreview);
+    hybridSchemaEl.addEventListener('change', updatePreview);
+    embedModelEl.addEventListener('input', updatePreview);
+    rrfWindowEl.addEventListener('input', updatePreview);
+    rrfKEl.addEventListener('input', updatePreview);
+    vectorFieldEl.addEventListener('input', updatePreview);
+    openrouterBaseEl.addEventListener('input', updatePreview);
+    openrouterKeyEl.addEventListener('input', updatePreview);
+    labelBoostEl.addEventListener('input', updatePreview);
     updatePreview();
   </script>
 </body>
