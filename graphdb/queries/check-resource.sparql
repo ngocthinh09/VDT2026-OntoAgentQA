@@ -1,0 +1,5 @@
+PREFIX dbr: <http://dbpedia.org/resource/>
+
+ASK {
+  dbr:Albert_Einstein ?p ?o .
+}
