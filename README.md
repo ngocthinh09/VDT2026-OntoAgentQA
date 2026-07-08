@@ -2,10 +2,6 @@
 
 VDT2026 OntoAgentQA is a Vietnamese question-answering system over a Knowledge Graph/Ontology. It combines an LLM, Elasticsearch, and a SPARQL endpoint to turn natural-language questions into traceable retrieval and execution steps, then produces a final answer grounded in GraphDB/DBpedia evidence.
 
-## Architecture
-
-![Agent architecture](image/agent.png)
-
 ## Features
 
 - Answer Vietnamese natural-language questions.
@@ -15,14 +11,40 @@ VDT2026 OntoAgentQA is a Vietnamese question-answering system over a Knowledge G
 - Track intermediate steps such as tool calls, generated SPARQL, and execution results.
 - Benchmark multiple strategies: LLM-only, SPARQL generation, and SPARQL self-correction.
 
-## Tech Stack
+## Architecture
 
-- Python
-- LangGraph
-- OpenRouter-compatible chat and embedding models
-- Elasticsearch 8.x
-- GraphDB-compatible SPARQL endpoint
-- DBpedia ontology/data
+![Agent architecture](image/agent.png)
+
+The system is organized as a LangGraph-based agent that coordinates reasoning and tool use over DBpedia/GraphDB.
+
+Main components:
+
+- **Input Question**: the Vietnamese natural-language question submitted by the user.
+- **Controller**: the central reasoning agent. It decides whether to search, inspect graph structure, execute SPARQL, retry with another tool call, or stop when enough evidence has been collected.
+- **Tool Node**: the execution layer for all retrieval and graph-access tools. It is grouped into three categories:
+  - **Search**: `search_entity`, `search_property`, and `search_class`. These tools ground natural-language mentions to DBpedia entities, ontology properties, and ontology classes through Elasticsearch.
+  - **Inspect**: `get_knowledgegraph_entry` and `get_property_examples`. These tools inspect nearby facts and real property usage through the SPARQL endpoint.
+  - **Execute**: `execute_sparql`. This tool runs the generated SPARQL query and returns the actual GraphDB result.
+- **Elasticsearch**: retrieval backend for entity full-text search and schema hybrid search.
+- **SPARQL Endpoint**: GraphDB endpoint used to inspect RDF data and execute generated `SELECT`/`ASK` queries.
+- **Reporter**: finalization agent that converts verified execution evidence into the final answer.
+- **Final Answer**: the user-facing answer grounded in the successful SPARQL execution result.
+
+The Controller and Tool Node form an iterative loop. After each tool call, the observation is added to the graph state. The Controller can then call another tool or pass the collected evidence to the Reporter.
+
+## Benchmark Results
+
+The benchmark uses 62 questions across categories such as comparison,
+multi-hop, entity, boolean, attribute, schema, superlative, list, and counting.
+The benchmark questions are available in
+[data/ontologyqa_test_gold_v1.json](data/ontologyqa_test_gold_v1.json).
+
+| Method | Avg Correct | Accuracy | Avg Input Tokens | Avg Output Tokens | Avg Time |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| LLM-Only | 21.2 | 34.19% | 175.52 | 6.00 | 0.31s |
+| SPARQL Generation | 25.2 | 40.65% | 2,560.83 | 357.22 | 6.78s |
+| SPARQL Generation with Self-correction | 33.6 | 54.19% | 9,128.15 | 907.16 | 16.93s |
+| ReAct Agent with Semantic Grounding | 51.0 | 82.25% | 53,508.71 | 438.63 | 25.22s |
 
 ## Project Structure
 
@@ -33,12 +55,17 @@ VDT2026 OntoAgentQA is a Vietnamese question-answering system over a Knowledge G
 |   |-- kg_tools.py                 # SPARQL/KG inspection tools
 |   |-- search_tools.py             # Elasticsearch search tools
 |   `-- prompt/                     # Controller and reporter prompts
+|-- benchmark-logs/                 # Historical benchmark logs
 |-- data/                           # Dataset and RDF/ontology input
-|-- docs/experiments/               # Experiment documentation
+|-- docs/
+|   |-- experiments/                # Experiment documentation
+|   `-- report/                     # Final report and benchmark spreadsheet
 |-- elasticsearch/                  # Elasticsearch setup docs and search helper
-|-- experiments/runners/            # CLI benchmark runners
+|-- experiments/
+|   |-- runners/                    # CLI benchmark runners
+|   `-- results/                    # Benchmark output directory
 |-- graphdb/                        # GraphDB repository/import docs and queries
-|-- image/agent.png                 # System architecture diagram
+|-- image/                          # System and report figures
 |-- notebooks/                      # Experimental notebooks
 |-- utils/
 |   |-- build_index.py              # Build Elasticsearch indices
@@ -47,6 +74,7 @@ VDT2026 OntoAgentQA is a Vietnamese question-answering system over a Knowledge G
 |   `-- test_reporter_agent.py      # Reporter/finalization unit test
 |-- .env.example
 |-- docker-compose.yml
+|-- README.md
 `-- requirements.txt
 ```
 
