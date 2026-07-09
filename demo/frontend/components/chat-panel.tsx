@@ -3,8 +3,8 @@
 import { FormEvent, KeyboardEvent, useMemo, useState } from "react";
 import { MessageBubble } from "@/components/message-bubble";
 import { TracePanel } from "@/components/trace-panel";
-import { sendQuestion } from "@/lib/api";
-import type { ChatMessage, ChatResponse } from "@/lib/types";
+import { streamQuestion } from "@/lib/api";
+import type { ChatMessage, ChatResponse, ChatStreamEvent } from "@/lib/types";
 
 const SAMPLE_QUESTIONS = [
   "Có mấy tàu có cảng đăng ký tại Cam Ranh?",
@@ -17,6 +17,20 @@ function makeId() {
     return crypto.randomUUID();
   }
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function emptyStreamingResponse(): ChatResponse {
+  return {
+    answer: "",
+    trace: [],
+    sparql: null,
+    raw_result: null,
+    metadata: {
+      elapsed_ms: 0,
+      event_count: 0,
+      finalization_error: null,
+    },
+  };
 }
 
 export function ChatPanel() {
@@ -58,17 +72,52 @@ export function ChatPanel() {
       },
     ]);
 
+    setLatestResponse(emptyStreamingResponse());
+
+    function handleStreamEvent(event: ChatStreamEvent) {
+      if (event.event === "trace_step") {
+        setLatestResponse((current) => {
+          const base = current ?? emptyStreamingResponse();
+          return {
+            ...base,
+            trace: [...base.trace, event.step],
+            metadata: {
+              ...base.metadata,
+              event_count: base.metadata.event_count + 1,
+            },
+          };
+        });
+        return;
+      }
+
+      if (event.event === "final_answer") {
+        setLatestResponse((current) => ({
+          answer: event.answer,
+          trace: current?.trace ?? [],
+          sparql: event.sparql ?? null,
+          raw_result: event.raw_result ?? null,
+          metadata: event.metadata,
+        }));
+        setMessages((current) => [
+          ...current,
+          {
+            id: makeId(),
+            role: "assistant",
+            content: event.answer,
+          },
+        ]);
+        return;
+      }
+
+      if (event.event === "error") {
+        setError(event.message);
+      }
+    }
+
     try {
-      const response = await sendQuestion(cleanQuestion);
-      setLatestResponse(response);
-      setMessages((current) => [
-        ...current,
-        {
-          id: makeId(),
-          role: "assistant",
-          content: response.answer,
-        },
-      ]);
+      await streamQuestion(cleanQuestion, {
+        onEvent: handleStreamEvent,
+      });
     } catch (err) {
       const message =
         err instanceof Error
@@ -147,7 +196,7 @@ export function ChatPanel() {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-[var(--muted)]">
                   <span className="h-2 w-2 rounded-full bg-[var(--rdf)]" />
-                  Agent is searching the graph...
+                  Agent is streaming trace...
                 </div>
               </div>
             </div>

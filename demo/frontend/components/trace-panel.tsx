@@ -1,6 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import type { ChatResponse } from "@/lib/types";
 import { JsonBlock } from "@/components/json-block";
 import { TraceStepCard } from "@/components/trace-step-card";
+import { ResultPreview } from "@/components/result-preview";
+import { getRawResultPreview } from "@/lib/trace-format";
 
 type TracePanelProps = {
   response: ChatResponse | null;
@@ -18,6 +23,11 @@ function formatMs(value?: number) {
 }
 
 export function TracePanel({ response, isLoading }: TracePanelProps) {
+  const [activeTab, setActiveTab] = useState<"steps" | "sparql" | "raw">(
+    "steps",
+  );
+  const rawPreview = response ? getRawResultPreview(response.raw_result) : null;
+
   return (
     <aside className="workbench-panel flex min-h-[34rem] flex-col rounded-[6px]">
       <div className="border-b border-[var(--line)] px-5 py-4">
@@ -65,6 +75,30 @@ export function TracePanel({ response, isLoading }: TracePanelProps) {
         </div>
       </div>
 
+      <div className="border-b border-[var(--line)] px-5 py-3">
+        <div className="grid grid-cols-3 rounded-[6px] border border-[var(--line)] bg-white/60 p-1">
+          {[
+            ["steps", "Steps"],
+            ["sparql", "SPARQL"],
+            ["raw", "Raw"],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setActiveTab(value as "steps" | "sparql" | "raw")}
+              className={[
+                "rounded-[4px] px-3 py-2 font-data text-[11px] uppercase tracking-[0.14em] transition focus:outline-none focus:ring-2 focus:ring-[var(--rdf)]",
+                activeTab === value
+                  ? "bg-[var(--graphite)] text-white shadow-sm"
+                  : "text-[var(--muted)] hover:bg-white hover:text-[var(--graphite)]",
+              ].join(" ")}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="flex-1 space-y-5 overflow-auto px-5 py-5">
         {!response ? (
           <div className="rounded-[6px] border border-dashed border-[var(--line-strong)] bg-white/55 px-4 py-8 text-center text-sm leading-6 text-[var(--muted)]">
@@ -78,20 +112,45 @@ export function TracePanel({ response, isLoading }: TracePanelProps) {
           </div>
         ) : null}
 
-        {response?.trace.length ? (
-          <div className="trace-rail space-y-4">
-            {response.trace.map((step) => (
-              <TraceStepCard key={`${step.step}-${step.tool}`} step={step} />
-            ))}
+        {activeTab === "steps" ? (
+          response?.trace.length ? (
+            <div className="trace-rail space-y-4">
+              {response.trace.map((step) => (
+                <TraceStepCard key={`${step.step}-${step.tool}`} step={step} />
+              ))}
+            </div>
+          ) : response ? (
+            <div className="rounded-[6px] border border-dashed border-[var(--line-strong)] bg-white/55 px-4 py-8 text-center text-sm leading-6 text-[var(--muted)]">
+              This response did not include trace steps.
+            </div>
+          ) : null
+        ) : null}
+
+        {activeTab === "sparql" && response ? (
+          <div className="space-y-4">
+            {response.sparql ? (
+              <JsonBlock
+                label="final sparql"
+                value={response.sparql}
+                maxHeightClassName="max-h-[32rem]"
+              />
+            ) : (
+              <div className="rounded-[6px] border border-dashed border-[var(--line-strong)] bg-white/55 px-4 py-8 text-center text-sm leading-6 text-[var(--muted)]">
+                No final SPARQL query was returned.
+              </div>
+            )}
           </div>
         ) : null}
 
-        {response?.sparql ? (
-          <JsonBlock label="final sparql" value={response.sparql} />
-        ) : null}
-
-        {response ? (
-          <JsonBlock label="raw result" value={response.raw_result ?? null} />
+        {activeTab === "raw" && response ? (
+          <div className="space-y-4">
+            <ResultPreview preview={rawPreview} />
+            <JsonBlock
+              label="raw result"
+              value={response.raw_result ?? null}
+              maxHeightClassName="max-h-[32rem]"
+            />
+          </div>
         ) : null}
       </div>
     </aside>

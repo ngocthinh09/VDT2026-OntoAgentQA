@@ -45,11 +45,18 @@ http://localhost:8000
 
 ## API Contract
 
-The frontend sends:
+The frontend streams:
 
 ```http
-POST /api/chat
+POST /api/chat/stream
 ```
 
-to `NEXT_PUBLIC_API_BASE_URL` and expects the backend response shape already
-implemented in `demo/backend`.
+to `NEXT_PUBLIC_API_BASE_URL` and consumes newline-delimited JSON events:
+
+- `run_started`
+- `trace_step`
+- `final_answer`
+- `error`
+- `done`
+
+The non-streaming `POST /api/chat` endpoint remains available in the backend.

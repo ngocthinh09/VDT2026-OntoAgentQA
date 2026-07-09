@@ -137,6 +137,31 @@ See [graphdb/README.md](graphdb/README.md) for GraphDB installation, repository 
 
 See [elasticsearch/README.md](elasticsearch/README.md) for Elasticsearch setup, required data files, index building, and search tool verification.
 
+## Run The Demo
+
+Terminal 1 - backend:
+
+```bash
+conda activate ontology-qa
+cd demo/backend
+pip install -r requirements.txt
+uvicorn app.main:app --port 8000
+```
+
+Terminal 2 - frontend:
+
+```bash
+cd demo/frontend
+npm install
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
 ## Run The Agent
 
 The main agent is implemented in `agents/ontology_qa_agent.py` and is created with `build_ontology_qa_agent`.

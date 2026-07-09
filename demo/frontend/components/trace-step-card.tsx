@@ -1,5 +1,12 @@
 import type { TraceStep } from "@/lib/types";
+import { CopyButton } from "@/components/copy-button";
 import { JsonBlock } from "@/components/json-block";
+import { ResultPreview } from "@/components/result-preview";
+import {
+  getTracePreview,
+  stringifyForCopy,
+  summarizeTraceStep,
+} from "@/lib/trace-format";
 
 type TraceStepCardProps = {
   step: TraceStep;
@@ -42,6 +49,8 @@ function getTone(type: string) {
 export function TraceStepCard({ step }: TraceStepCardProps) {
   const tone = getTone(step.type);
   const hasError = step.status === "error" || Boolean(step.error);
+  const summary = summarizeTraceStep(step);
+  const preview = getTracePreview(step);
 
   return (
     <div className="relative pl-10">
@@ -75,20 +84,44 @@ export function TraceStepCard({ step }: TraceStepCardProps) {
             <h3 className="mt-1 truncate font-data text-sm text-[var(--graphite)]">
               {step.tool ?? "tool call"}
             </h3>
+            <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--muted)]">
+              {summary}
+            </p>
           </div>
           <span className="font-data mt-1 text-xs text-[var(--muted)] transition-transform group-open:rotate-180">
             v
           </span>
         </summary>
 
-        <div className="space-y-3 border-t border-[var(--line)] px-4 py-4">
+        <div className="space-y-4 border-t border-[var(--line)] px-4 py-4">
           {step.error ? (
             <div className="rounded-[6px] border border-[rgb(184_74_69_/_0.24)] bg-[rgb(184_74_69_/_0.08)] px-3 py-2 text-sm text-[var(--danger)]">
               {step.error}
             </div>
           ) : null}
-          <JsonBlock label="input" value={step.input ?? null} />
-          <JsonBlock label="output" value={step.output ?? null} />
+
+          <ResultPreview preview={preview} />
+
+          <div className="grid gap-3 xl:grid-cols-2">
+            <JsonBlock
+              label="input"
+              value={step.input ?? null}
+              maxHeightClassName="max-h-52"
+            />
+            <JsonBlock
+              label="raw output"
+              value={step.output ?? null}
+              maxHeightClassName="max-h-52"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <CopyButton label="Copy input" value={stringifyForCopy(step.input)} />
+            <CopyButton
+              label="Copy output"
+              value={stringifyForCopy(step.output)}
+            />
+          </div>
         </div>
       </details>
     </div>

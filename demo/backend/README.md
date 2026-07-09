@@ -40,6 +40,15 @@ curl -X POST http://localhost:8000/api/chat \
   -d '{"question":"Có mấy tàu có cảng đăng ký tại Cam Ranh?"}'
 ```
 
+Stream a question as NDJSON:
+
+```bash
+curl -N -X POST http://localhost:8000/api/chat/stream \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/x-ndjson" \
+  -d '{"question":"Có mấy tàu có cảng đăng ký tại Cam Ranh?"}'
+```
+
 Swagger UI is available at:
 
 ```text
@@ -73,3 +82,14 @@ http://localhost:8000/docs
 }
 ```
 
+## Streaming Events
+
+`POST /api/chat/stream` returns `application/x-ndjson`. Each line is one JSON
+event:
+
+```json
+{"event":"run_started","question":"..."}
+{"event":"trace_step","step":{"step":1,"type":"search","tool":"search_entity_by_label"}}
+{"event":"final_answer","answer":"...","sparql":"SELECT ...","raw_result":[],"metadata":{"elapsed_ms":1234,"event_count":8,"finalization_error":null}}
+{"event":"done"}
+```

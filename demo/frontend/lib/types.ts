@@ -28,3 +28,27 @@ export type ChatMessage = {
   role: "user" | "assistant";
   content: string;
 };
+
+export type ChatStreamEvent =
+  | {
+      event: "run_started";
+      question: string;
+    }
+  | {
+      event: "trace_step";
+      step: TraceStep;
+    }
+  | {
+      event: "final_answer";
+      answer: string;
+      sparql?: string | null;
+      raw_result?: unknown;
+      metadata: ChatMetadata;
+    }
+  | {
+      event: "error";
+      message: string;
+    }
+  | {
+      event: "done";
+    };
