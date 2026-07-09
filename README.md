@@ -13,7 +13,7 @@ VDT2026 OntoAgentQA is a Vietnamese question-answering system over a Knowledge G
 
 ## Architecture
 
-![Agent architecture](image/agent.png)
+![Agent architecture](docs/image/agent.png)
 
 The system is organized as a LangGraph-based agent that coordinates reasoning and tool use over DBpedia/GraphDB.
 
@@ -55,17 +55,16 @@ The benchmark questions are available in
 |   |-- kg_tools.py                 # SPARQL/KG inspection tools
 |   |-- search_tools.py             # Elasticsearch search tools
 |   `-- prompt/                     # Controller and reporter prompts
-|-- benchmark-logs/                 # Historical benchmark logs
 |-- data/                           # Dataset and RDF/ontology input
 |-- docs/
 |   |-- experiments/                # Experiment documentation
+|   |-- image/                      # System and report figures
 |   `-- report/                     # Final report and benchmark spreadsheet
 |-- elasticsearch/                  # Elasticsearch setup docs and search helper
 |-- experiments/
 |   |-- runners/                    # CLI benchmark runners
 |   `-- results/                    # Benchmark output directory
 |-- graphdb/                        # GraphDB repository/import docs and queries
-|-- image/                          # System and report figures
 |-- notebooks/                      # Experimental notebooks
 |-- utils/
 |   |-- build_index.py              # Build Elasticsearch indices
