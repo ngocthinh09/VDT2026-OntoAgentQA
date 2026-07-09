@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4faf8;
+  --foreground: #172027;
+  --paper: #fbfefd;
+  --paper-strong: #ffffff;
+  --line: #c7dad7;
+  --line-strong: #91aaa5;
+  --graphite: #172027;
+  --muted: #60726e;
+  --blueprint: #2f6f9f;
+  --rdf: #0e9888;
+  --query: #c88a13;
+  --danger: #b84a45;
+  --shadow: 0 24px 70px rgb(23 32 39 / 0.12);
+  --font-display: "Aptos Display", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Aptos", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-data);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+body::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  background:
+    linear-gradient(rgb(47 111 159 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(47 111 159 / 0.045) 1px, transparent 1px),
+    radial-gradient(circle at 20% 12%, rgb(14 152 136 / 0.14), transparent 30rem),
+    radial-gradient(circle at 92% 6%, rgb(200 138 19 / 0.12), transparent 24rem),
+    var(--background);
+  background-size: 28px 28px, 28px 28px, auto, auto, auto;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+::selection {
+  color: var(--paper-strong);
+  background: var(--rdf);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-data {
+  font-family: var(--font-data);
+}
+
+.workbench-panel {
+  border: 1px solid rgb(145 170 165 / 0.55);
+  background: rgb(251 254 253 / 0.82);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.trace-rail {
+  background:
+    linear-gradient(var(--line), var(--line)) 18px 0 / 1px 100% no-repeat;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .trace-pulse {
+    animation: trace-pulse 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes trace-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scaleX(0.7);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
