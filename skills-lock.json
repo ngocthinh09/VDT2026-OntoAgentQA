@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "beamer": {
+      "source": "noi1r/beamer-skill",
+      "sourceType": "github",
+      "skillPath": "beamer/SKILL.md",
+      "computedHash": "31b37567a7d0f5c9002d24451343f4077a53db447e56ad4ece3d9a6bb5ff082a"
+    },
     "find-skills": {
       "source": "vercel-labs/skills",
       "sourceType": "github",
