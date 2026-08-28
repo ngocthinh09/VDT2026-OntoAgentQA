@@ -1,4 +1,4 @@
-# VDT2026 OntoAgentQA
+# OntoAgentQA
 
 VDT2026 OntoAgentQA is a Vietnamese question-answering system over a Knowledge Graph/Ontology. It combines an LLM, Elasticsearch, and a SPARQL endpoint to turn natural-language questions into traceable retrieval and execution steps, then produces a final answer grounded in GraphDB/DBpedia evidence.
 
